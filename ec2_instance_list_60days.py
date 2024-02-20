@@ -34,7 +34,7 @@ def get_ec2_instances_created_last_60_days():
                 launch_time = datetime.strptime(launch_time_str, "%Y-%m-%d %H:%M:%S%z")
             except ValueError:
                 # Handle variations in datetime format returned by AWS
-                launch_time = datetime.strptime(launch_time_str, "%Y-%m-%dT%H:%M:%S.%f%z")
+                launch_time = datetime.strptime(launch_time_str, "%Y-%m-%d %H:%M:%S.%f%z")
 
             # Check if the instance was launched within the last 60 days
             if launch_time > sixty_days_ago:
