@@ -5,9 +5,9 @@ from datetime import datetime, timedelta, timezone
 ## Function to list all EC2 in last 60 Days....
 ################################################
 
-def get_ec2_instances_created_last_60_days():
+def get_ec2_instances_created_last_60_days(region):
     # Get the current time
-    ec2_client = boto3.client("ec2")
+    ec2_client = boto3.client("ec2", region_name=region)
 
     current_time = datetime.now()
 
@@ -42,13 +42,14 @@ def get_ec2_instances_created_last_60_days():
 
     return instances_last_60_days
 
-def print_instance_details(instances):
+def print_instance_details(instances,region):
     for instance in instances:
         # Print instance details
         print("-------------------------")
         print("Instance ID: ", instance['InstanceId'])
         print("Launch Time: ", instance['LaunchTime'])
         print("Instance State: ", instance['State']['Name'])
+        print("Region : ", region)
         print("-------------------------")
 
 
@@ -61,11 +62,16 @@ def main():
     print("*******************************************************")
     print("   List of instances Created in last 60 Days....")
     print("*******************************************************")
-    instances_last_60_days = get_ec2_instances_created_last_60_days()
+    ec2_regions = [region['RegionName'] for region in boto3.client('ec2').describe_regions()['Regions']]
+    
+    instances_last_60_days = []
+    for region in ec2_regions:
+        instances_last_60_days.extend(get_ec2_instances_created_last_60_days(region))
+    
     if len(instances_last_60_days) == 0:
         print("No Instance Created in last 60 Days....")
     else:
-        print_instance_details(instances_last_60_days)
+        print_instance_details(instances_last_60_days,region)
 
 if __name__ == "__main__":
     main()
