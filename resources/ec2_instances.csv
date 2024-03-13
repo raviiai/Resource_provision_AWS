@@ -1,4 +1,4 @@
 InstanceId,Owner,PrivateIpAddress,PublicIpAddress,Region,State,Tags
-i-07902ed13c5e86ffb,,,,ap-south-1,terminated,{}
-i-08de93e60401b26cf,,172.31.9.65,,ap-south-1,stopped,{'Name': 'ravi'}
-i-0ebc290b3beadc1f3,,172.31.46.231,3.108.67.5,ap-south-1,running,{}
+i-08de93e60401b26cf,,172.31.9.65,,ap-south-1,stopped,"{'Env': None, 'Environment': 'POC'}"
+i-0ebc290b3beadc1f3,,,,ap-south-1,terminated,"{'Env': None, 'Environment': None}"
+i-03401fb7e69a55860,,,,ap-south-1,terminated,"{'Env': None, 'Environment': None}"

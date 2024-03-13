@@ -33,16 +33,11 @@ def get_ec2(desired_tags):
             # Iterate over each instance
             for instance in instances:
                 instance_tags = {tag['Key']: tag['Value'] for tag in instance.tags or []}
-                
                 # If specific tags are provided, use them; otherwise, use default
                 if desired_tags:
                     specific_tags = {tag: instance_tags.get(tag, None) for tag in desired_tags}
                 else:
                     specific_tags = instance_tags
-                
-                # Check if the desired tag value is None, if so, skip writing this instance to the CSV
-                if desired_tags and None in specific_tags.values():
-                    specific_tags = {}
                 
                 # Write instance details to CSV
                 writer.writerow({
@@ -54,7 +49,6 @@ def get_ec2(desired_tags):
                     'State': instance.state['Name'],
                     'Tags': specific_tags
                 })
-
 
 def main():
     args = parse_arguments()
