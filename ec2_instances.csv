@@ -1,0 +1,2 @@
+InstanceId,Owner,PrivateIpAddress,PublicIpAddress,Region,State,Tags
+i-08de93e60401b26cf,,172.31.9.65,,ap-south-1,stopped,"{'Name': 'ravi', 'Owner': 'Mangal', 'Environment': 'POC'}"
