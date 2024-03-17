@@ -56,30 +56,35 @@ def get_ec2(ec2_resource, regions, desired_tags, csv_file, field_names):
 
         # Iterate over each region
         for region in regions:
+            # Create a separate client for each region
+            ec2_client = boto3.client('ec2', region_name=region)
+
             # Get all instances in the region
-            instances = ec2_resource.instances.filter()
-            # Iterate over each instance
-            for instance in instances:
-                # Ensure each instance is processed only once
-                if instance.id not in processed_instances:
-                    instance_tags = {tag['Key']: tag['Value'] for tag in instance.tags or []}
-                    # If specific tags are provided, use them; otherwise, use default
-                    if desired_tags:
-                        specific_tags = {tag: instance_tags.get(tag, None) for tag in desired_tags}
-                    else:
-                        specific_tags = instance_tags
-                    # Write instance details to CSV
-                    writer.writerow({
-                        'InstanceId': instance.id,
-                        'Owner': instance_tags.get('AppOwner', None),
-                        'PrivateIpAddress': instance.private_ip_address,
-                        'PublicIpAddress': instance.public_ip_address,
-                        'Region': region,
-                        'State': instance.state['Name'],
-                        'Tags': str(specific_tags)  # Convert dictionary to string
-                    })
-                    # Add instance ID to processed set
-                    processed_instances.add(instance.id)
+            instances = ec2_client.describe_instances().get('Reservations', [])
+
+            # Iterate over each reservation
+            for reservation in instances:
+                for instance in reservation['Instances']:
+                    # Ensure each instance is processed only once
+                    if instance['InstanceId'] not in processed_instances:
+                        instance_tags = {tag['Key']: tag['Value'] for tag in instance.get('Tags', [])}
+                        # If specific tags are provided, use them; otherwise, use default
+                        if desired_tags:
+                            specific_tags = {tag: instance_tags.get(tag, None) for tag in desired_tags}
+                        else:
+                            specific_tags = instance_tags
+                        # Write instance details to CSV
+                        writer.writerow({
+                            'InstanceId': instance['InstanceId'],
+                            'Owner': instance_tags.get('AppOwner', None),
+                            'PrivateIpAddress': instance.get('PrivateIpAddress', None),
+                            'PublicIpAddress': instance.get('PublicIpAddress', None),
+                            'Region': region,
+                            'State': instance['State']['Name'],
+                            'Tags': str(specific_tags)  # Convert dictionary to string
+                        })
+                        # Add instance ID to processed set
+                        processed_instances.add(instance['InstanceId'])
 
 
 if __name__ == "__main__":
